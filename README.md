@@ -4,6 +4,7 @@ Bu bir ikart bulma oyunudur oyunun amacı her satırdaki 5 kartın içinden yeş
 Kartları bulmak için oyundaki karakteri kartların üstüne getiriniz ve kart açıldığında eğer kart yeşil ise bir sonraki satıra geçilir.
 Kartlar oyun başlamadan önce 30 saniye süre ile size gösterilecektir ve devamında kartlar kapanıp sizin bulmanız gerekecek.
 Oyundaki karakterinizi yön tuşları sayesinde hareket ettirebilirsiniz.
+Oyunu oynamak için linke tıklayınız http://koyunlarr.6te.net/
 ## Oyunun oynanış vıdeosu
 https://youtu.be/J9qIVux31YI
 ## Oyundan bazi görseller
