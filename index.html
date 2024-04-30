@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kart Bulma Oyunu</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background: blue;
+    }
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.548);
+    }
+    .modal p {
+      position: relative;
+      min-width: 30%;
+      min-height: 30%;
+      display: flex;
+      padding: 2rem;
+      background: white;
+      border-radius: 1.5rem;
+    }
+    #modal_kapat{
+      position: absolute;
+      right: 0;
+      top: 0;
+      background: gray;
+      padding: 0.5rem;
+      border-bottom-left-radius: 1rem;
+      cursor: pointer;
+    }
+    #kurallar_btn {
+      position: absolute;
+      top: 30px;
+      left: 30px;
+      background: rgb(181, 67, 67);
+      padding: 0.5rem;
+      color: white;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="gameCanvas"></canvas>
+  <div class="modal">
+    <p>OYUN KURALLARI<br>    
+        Oyunun amacı 5 kart arasından yeşil olanı bulmaktır.<br>
+        Kartlar oyunun başında 30 saniye açık olacaktır yeşil kartları aklınızda tutunuz<br>
+        Kartlar kapandıktan sonra karakteriniz ile hangi kartın üstüne giderseniz o kart açılır<br>
+        Eğer kart yeşil ise bir sonraki satıra geçersiniz kırmızı ise oyun biter<br>
+        Her doğru kutu 1 puan değerindedir<br>
+        Oyundaki hedef hiç kırmızı kart açmadan bütün yeşil kartalrı bulmaktır<br>  <button id="modal_kapat">kapat</button> </p>
+  </div>
+  <button id="kurallar_btn" >KURALLAR</button>
+
+  <script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+
+    const cardWidth = 80;
+    const cardHeight = 100;
+    const padding = 10;
+    const numRows = 5;
+    const numCols = 15;
+    const cards = [];
+
+    let characterX = 20;
+    let characterY = cardHeight + padding;
+
+    canvas.width = cardWidth * numCols + padding * (numCols);    //canvasin boyutlarini belirleme 
+    canvas.height = cardHeight * numRows + padding * (numRows);
+
+    function drawCard(x, y, topColor, bottomColor) {  //kartlari olusturma
+  ctx.fillStyle = topColor; // Üst yüzü siyah yapıyoruz
+  ctx.fillRect(x, y, cardWidth, cardHeight);
+  ctx.fillStyle = bottomColor; // Alt yüzü yeşil veya kırmızı olacak şekilde ayarlıyoruz
+  ctx.fillRect(x, y + cardHeight / 2, cardWidth, cardHeight / 2);
+}
+
+    function drawCharacter(x, y) {  //karekteri cizme
+      ctx.fillStyle = 'purple';
+      ctx.beginPath();
+     ctx.arc(x, y, 10, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    function drawGame() { //  oyunu olusturma
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      for (let i = 0; i < numRows; i++) {
+        for (let j = 0; j < numCols; j++) {
+          const cardX = j * (cardWidth + padding);
+          const cardY = i * (cardHeight + padding);
+          drawCard(cardX, cardY, cards[i][j].topColor, cards[i][j].bottomColor);
+        }
+      }
+
+      drawCharacter(characterX, characterY);
+    }
+
+    function initGame() {
+  for (let i = 0; i < numRows; i++) {
+    cards[i] = [];
+    for (let j = 0; j < numCols; j++) {
+      if (j === 0) {
+        cards[i][j] = { topColor: 'white', bottomColor: 'white' }; // İlk sütun boş 
+      } else {
+        // Her sütunda 1 yeşil kart ve belirli koşullarda kırmızı kart olacak şekilde ayarlıyoruz
+        const isGreen = j === Math.floor(Math.random() * numCols); // Her sütunda 1 yeşil kart
+        const isRed = j < 3; // Her sütunda ilk üç kart kırmızı
+        cards[i][j] = { 
+          topColor: 'black',
+          bottomColor: isRed ? 'red' : (isGreen ? 'green' : 'black') // Kırmızı veya yeşil olmayanlar siyah
+       
+          }
+        }
+      }
+    }
+
+      drawGame();
+    }
+
+    function handleKeyPress(event) {
+      const keyCode = event.keyCode;
+
+      switch (keyCode) {
+        case 37: // Sol ok tuşu
+          if (characterX > 0) characterX -= 10;
+          break;
+        case 38: // Yukarı ok tuşu
+          if (characterY > cardHeight + padding) characterY -= 10;
+          break;
+        case 39: // Sağ ok tuşu
+          if (characterX < canvas.width - cardWidth) characterX += 10;
+          break;
+        case 40: // Aşağı ok tuşu
+          if (characterY < canvas.height - cardHeight) characterY += 10;
+          break;
+      }
+
+      drawGame();
+    }
+
+    initGame();
+
+    window.addEventListener('keydown', handleKeyPress);
+    const kurallar =document.getElementById("kurallar_btn");
+    const modal = document.querySelector(".modal");
+    const modalKapat = document.getElementById("modal_kapat");
+    kurallar.addEventListener("click",() =>{    //Kurallar butonuna basinca pencere acilmasi
+      modal.style.display = "flex";     
+    });
+    modalKapat.addEventListener("click",()=>{   //kapat butonuna basinca pencerenin kapanmasi
+      modal.style.display = "none"
+    });
+  </script>
+</body>
+</html>
